@@ -127,9 +127,11 @@ jobs:
 
           # 파일 빌드 및 S3 업로드
           ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+            export AWS_STORAGE_BUCKET_NAME="${{ secrets.AWS_STORAGE_BUCKET_NAME }}"
             cd /home/ubuntu/docker/frontend
             git pull origin main
             npm install
+            echo "AWS_STORAGE_BUCKET_NAME=$AWS_STORAGE_BUCKET_NAME" >> .env
             npm run build
-            aws s3 sync ./dist s3://${AWS_STORAGE_BUCKET_NAME}/build --delete
+            aws s3 sync ./dist s3://$AWS_STORAGE_BUCKET_NAME/build --delete
           EOF
