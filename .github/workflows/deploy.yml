@@ -118,7 +118,7 @@ jobs:
       
       - name: Build Frontend
         run: |
-          cd docker/frontend
+          cd ../frontend
           npm install
           npm run dev
 
