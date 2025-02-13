@@ -75,8 +75,8 @@ jobs:
             # Django 마이그레이션 실행
             python manage.py migrate
 
-            # 정적 파일 수집
-            python manage.py collectstatic --noinput
+            # # 정적 파일 수집
+            # python manage.py collectstatic --noinput
 
             # MySQL 실행 확인 및 시작
             if ! systemctl is-active --quiet mysql; then
