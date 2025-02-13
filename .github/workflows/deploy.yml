@@ -131,5 +131,5 @@ jobs:
             git pull origin main
             npm install
             npm run dev
-            pm2 restart frontend || pm2 start npm --name "frontend" -- run dev
+            pm2 restart vite-app
           EOF
