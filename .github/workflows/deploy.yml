@@ -107,7 +107,7 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          cd frontend
+          cd docker/frontend
           npm install
 
       - name: Build Frontend
