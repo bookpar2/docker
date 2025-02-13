@@ -43,7 +43,7 @@ jobs:
             export ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}"
 
             # 백엔드 디렉토리 이동
-            cd /home/ubuntu/docker/django-backend
+            cd /home/ubuntu/docker/backend
 
             # 최신 코드 가져오기
             git pull origin main
@@ -75,7 +75,7 @@ jobs:
               sudo systemctl start mysql
             fi
 
-            # Gunicorn 실행 (PM2 대신)
+            # Gunicorn 실행
             sudo systemctl restart gunicorn
 
             # Nginx 재시작
