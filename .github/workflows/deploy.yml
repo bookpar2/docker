@@ -126,6 +126,7 @@ jobs:
 
           # 파일 빌드 및 S3 업로드
           ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+            export AWS_STORAGE_BUCKET_NAME="${{ secrets.AWS_STORAGE_BUCKET_NAME }}"
             cd /home/ubuntu/docker/frontend
             git pull origin main
             npm install
