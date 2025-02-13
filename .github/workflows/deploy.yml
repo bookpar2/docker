@@ -118,7 +118,7 @@ jobs:
       
       - name: Build Frontend
         run: |
-          cd frontend
+          cd $GITHUB_WORKSPACE/docker/frontend
           npm install
           npm run build
 
