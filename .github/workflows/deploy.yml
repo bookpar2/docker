@@ -25,8 +25,6 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
 
         run: |
           # SSH 키 설정
@@ -39,8 +37,6 @@ jobs:
             
             # 환경 변수 설정
             export DATABASE_URL="${{ secrets.DATABASE_URL }}"
-            export DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}"
-            export ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}"
 
             # 백엔드 디렉토리 이동
             cd /home/ubuntu/docker/backend
@@ -60,8 +56,6 @@ jobs:
 
             # .env 파일 생성 (Django 환경 변수)
             echo "DATABASE_URL=$DATABASE_URL" > .env
-            echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> .env
-            echo "ALLOWED_HOSTS=$ALLOWED_HOSTS" >> .env
 
             # Django 마이그레이션 실행
             python manage.py migrate
