@@ -130,5 +130,6 @@ jobs:
             cd /home/ubuntu/docker/frontend
             git pull origin main
             npm install
-            nohup npm run dev &
+            npm run build
+            aws s3 sync . s3://${{ secrets.AWS_STORAGE_BUCKET_NAME }}/build --delete
           EOF
