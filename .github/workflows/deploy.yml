@@ -112,7 +112,7 @@ jobs:
 
       - name: Build Frontend
         run: |
-          cd frontend
+          cd docker/frontend
           npm run build
 
       - name: Configure AWS CLI
