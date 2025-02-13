@@ -124,4 +124,4 @@ jobs:
 
       - name: Deploy Frontend to S3
         run: |
-          aws s3 sync ./frontend/build s3://AWS_STORAGE_BUCKET_NAME --delete
+          aws s3 sync ./frontend/build s3://${{ secrets.AWS_STORAGE_BUCKET_NAME }} --delete
