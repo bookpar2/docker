@@ -130,6 +130,5 @@ jobs:
             cd /home/ubuntu/docker/frontend
             git pull origin main
             npm install
-            npm run dev
-            pm2 restart vite-app
+            nohup npm run dev &
           EOF
