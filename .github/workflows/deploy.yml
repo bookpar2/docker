@@ -7,17 +7,17 @@ on:
 
 jobs:
   backend:
-    name: Deploy Backend
+    name: Deploy Django Backend
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          node-version: '18'
+          python-version: '3.10'
 
       - name: SSH to EC2 and Deploy
         env:
@@ -25,6 +25,8 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
 
         run: |
           # SSH 키 설정
@@ -37,26 +39,35 @@ jobs:
             
             # 환경 변수 설정
             export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            export DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}"
+            export ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}"
 
             # 백엔드 디렉토리 이동
-            cd /home/ubuntu/docker/backend
+            cd /home/ubuntu/docker/django-backend
 
             # 최신 코드 가져오기
             git pull origin main
 
+            # Python 가상환경 설정
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+
             # 종속성 설치
-            npm install
+            pip install --upgrade pip
+            pip install -r requirements.txt
 
-            # .env 파일 생성 (Prisma 인식용)
+            # .env 파일 생성 (Django 환경 변수)
             echo "DATABASE_URL=$DATABASE_URL" > .env
+            echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> .env
+            echo "ALLOWED_HOSTS=$ALLOWED_HOSTS" >> .env
 
-            # # Prisma 마이그레이션 실행
-            # if [ -f "prisma/schema.prisma" ]; then
-            #   echo "Running Prisma migrations..."
-            #   npx prisma migrate deploy
-            # else
-            #   echo "Prisma schema not found. Skipping migrations..."
-            # fi
+            # Django 마이그레이션 실행
+            python manage.py migrate
+
+            # 정적 파일 수집
+            python manage.py collectstatic --noinput
 
             # MySQL 실행 확인 및 시작
             if ! systemctl is-active --quiet mysql; then
@@ -64,16 +75,11 @@ jobs:
               sudo systemctl start mysql
             fi
 
-            # PM2로 백엔드 실행
-            if pm2 describe "app" > /dev/null; then
-              echo "App is running, reloading..."
-              pm2 reload all
-            else
-              echo "Starting app with PM2..."
-              pm2 start server.js --name "app"
-            fi
+            # Gunicorn 실행 (PM2 대신)
+            sudo systemctl restart gunicorn
 
-            pm2 save
+            # Nginx 재시작
+            sudo systemctl restart nginx
           EOF
 
   # frontend:
