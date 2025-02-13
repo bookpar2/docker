@@ -105,31 +105,31 @@ jobs:
         with:
           node-version: 18
 
-      - name: Configure AWS CLI
+      - name: Configure AWS CLI and Deploy to EC2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_S3_REGION_NAME }}
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
-        run: |
-          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set region $AWS_REGION
-      
-      - name: Setup SSH for EC2
-        env:
           PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
+          # AWS CLI 설정
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set region $AWS_REGION
+          
+          # EC2 접속
           mkdir -p ~/.ssh
           echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+          # 파일 빌드 및 S3 업로드
           ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
             cd /home/ubuntu/docker/frontend
             git pull origin main
             npm install
             npm run build
-            aws s3 sync . s3://${{ secrets.AWS_STORAGE_BUCKET_NAME }}/build --delete
+            aws s3 sync ./dist s3://${AWS_STORAGE_BUCKET_NAME}/build --delete
           EOF
