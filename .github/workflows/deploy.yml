@@ -73,6 +73,7 @@ jobs:
             echo "AWS_STORAGE_BUCKET_NAME=$AWS_STORAGE_BUCKET_NAME" >> .env
 
             # Django 마이그레이션 실행
+            python manage.py makemigrations
             python manage.py migrate
 
             # # 정적 파일 수집
