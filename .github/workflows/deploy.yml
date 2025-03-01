@@ -130,5 +130,5 @@ jobs:
             git pull origin main
             npm install
             npm run build
-            aws s3 sync ./dist s3://bookpar2/build --delete
+            aws s3 sync ./dist s3://bookpar2.shop/build --delete
           EOF
