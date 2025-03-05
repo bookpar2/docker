@@ -94,9 +94,8 @@ jobs:
             sudo systemctl restart nginx
           EOF
 
-
   frontend:
-    name: Deploy Frontend
+    name: Deploy Frontend build
     runs-on: ubuntu-latest
     needs: backend
 
